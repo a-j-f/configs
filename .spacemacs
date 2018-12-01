@@ -33,7 +33,7 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(markdown
+   '(
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -69,10 +69,9 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
-                                      2048-game
                                       dtrt-indent
-                                      counsel-gtags
                                       )
+
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
@@ -204,7 +203,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme 'doom ;;(spacemacs :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme 'doom
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -576,10 +575,10 @@ dump."
   )
 
 (defun dotspacemacs/user-config ()
-   "Configuration for user code:
+  "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
 configuration.
-Pput your configuration code here, except for variables that should be set
+Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
   ;; Compile mode hook
@@ -661,7 +660,9 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (evil-unimpaired f s dash))))
+ '(package-selected-packages
+   (quote
+    (xterm-color ws-butler winum volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smeargle shell-pop restart-emacs rainbow-delimiters popwin persp-mode pcre2el paradox spinner orgit org-bullets open-junk-file neotree multi-term move-text markdown-toc markdown-mode magit-gitflow macrostep lorem-ipsum linum-relative link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-gtags helm-gitignore request helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit ghub treepy graphql with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg eval-sexp-fu highlight eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dtrt-indent disaster diminish define-word counsel-gtags counsel swiper ivy company-c-headers column-enforce-mode cmake-mode clean-aindent-mode clang-format bind-map bind-key auto-yasnippet auto-highlight-symbol auto-compile packed ace-link ace-jump-helm-line helm helm-core ac-ispell auto-complete popup 2048-game yasnippet which-key undo-tree org-plus-contrib mmm-mode hydra ggtags diff-hl company-statistics company async aggressive-indent adaptive-wrap ace-window avy evil-unimpaired f s dash))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
