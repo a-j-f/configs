@@ -46,8 +46,7 @@ This function should only modify configuration layer settings."
      emacs-lisp
      git
      ;; markdown
-     multiple-cursors
-     neotree
+     ;; neotree
      ;; org
      (shell :variables
             shell-default-height 30
@@ -55,10 +54,12 @@ This function should only modify configuration layer settings."
      ;; spell-checking
      ;; syntax-checking
      (version-control :variables
-                      version-control-diff-tool 'git-gutter
-                      version-control-diff-side 'left
-                      version-control-global-margin t)
+                      version-control-diff-tool 'diff-hl ; diff package: this enables dired gutter as well
+                      version-control-diff-side 'left    ; location of git gutter
+                      version-control-global-margin t)   ; enable git gutter in all supported buffers
+
      c-c++
+     systemd
      )
 
    ;; List of additional packages that will be installed without being
@@ -376,7 +377,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, start an Emacs server if one is not already running.
    ;; (default nil)
-   dotspacemacs-enable-server nil
+   dotspacemacs-enable-server t
 
    ;; Set the emacs server socket location.
    ;; If nil, uses whatever the Emacs default is, otherwise a directory path
@@ -387,7 +388,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, advise quit functions to keep server open when quitting.
    ;; (default nil)
-   dotspacemacs-persistent-server nil
+   dotspacemacs-persistent-server t
 
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
@@ -458,8 +459,53 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
                                                                 ))))
 
 
-  ;; C style waf
-  (c-add-style "waf"
+  )
+
+(defun dotspacemacs/user-load ()
+  "Library to load while dumping.
+This function is called only while dumping Spacemacs configuration. You can
+`require' or `load' the libraries of your choice that will be included in the
+dump."
+  )
+
+(defun dotspacemacs/user-config ()
+  "Configuration for user code:
+This function is called at the very end of Spacemacs startup, after layer
+configuration.
+Put your configuration code here, except for variables that should be set
+before packages are loaded."
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; COMPILE MODE CONFIG ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;; Improves compilation buffer performance
+  (defun my-compilation-mode-hook ()
+    ;; Delete maven regexp as this makes compilation buffer laggy
+    (setq compilation-error-regexp-alist
+          (delete 'maven compilation-error-regexp-alist))
+    )
+  (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
+
+  ;;;;;;;;;;;;;;;;;;;;;
+  ;; TCL MODE CONFIG ;;
+  ;;;;;;;;;;;;;;;;;;;;;
+
+  ;; Customisation for TCL mode
+  (defun my-tcl-mode-hook ()
+    (setq indent-tabs-mode nil)
+    (dtrt-indent-mode)
+    (dtrt-indent-adapt)
+    (helm-gtags-mode)
+    )
+  (add-hook 'tcl-mode-hook 'my-tcl-mode-hook)
+
+  ;;;;;;;;;;;;;;;;;;;
+  ;; C MODE CONFIG ;;
+  ;;;;;;;;;;;;;;;;;;;
+
+  ;; C style ajf
+  (c-add-style "ajf"
                '("linux"
                  (c-basic-offset . 4)     ; Guessed value
                  (c-offsets-alist
@@ -537,7 +583,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
                   (template-args-cont c-lineup-template-args +)
                   (topmost-intro-cont . c-lineup-topmost-intro-cont))))
 
-  (setq-default c-default-style "waf")
+  (setq-default c-default-style "ajf")
 
   '(c-block-comment-prefix-starts "* ")
   '(c-doc-comment-style
@@ -545,49 +591,19 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
           (java-mode . javadoc)
           (pike-mode . autodoc))))
 
-  ;; Set up c indent style etc
   (defun my-c-mode-hook ()
-    (dtrt-indent-mode)
+    (dtrt-indent-mode)                  ; Adjust indent setting to match file on the fly
     (dtrt-indent-adapt)
     (which-func-mode)
-    (counsel-gtags-mode)
+    (helm-gtags-mode)                   ; Enable completion
     )
 
 
   (add-hook 'c-mode-common-hook 'my-c-mode-hook)
 
-  ;; Set up tcl
-  (defun my-tcl-mode-hook ()
-    (setq indent-tabs-mode nil)
-    (dtrt-indent-mode)
-    (dtrt-indent-adapt)
-    (counsel-gtags-mode)
-    )
 
-  (add-hook 'tcl-mode-hook 'my-tcl-mode-hook)
-  )
 
-(defun dotspacemacs/user-load ()
-  "Library to load while dumping.
-This function is called only while dumping Spacemacs configuration. You can
-`require' or `load' the libraries of your choice that will be included in the
-dump."
-  )
 
-(defun dotspacemacs/user-config ()
-  "Configuration for user code:
-This function is called at the very end of Spacemacs startup, after layer
-configuration.
-Put your configuration code here, except for variables that should be set
-before packages are loaded."
-
-  ;; Compile mode hook
-  (defun my-compilation-mode-hook ()
-    ;; Delete maven regexp as this makes compilation buffer laggy
-    (setq compilation-error-regexp-alist
-          (delete 'maven compilation-error-regexp-alist))
-    )
-  (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
 
   ;; enable smooth scrolling
   (spacemacs/enable-smooth-scrolling)
@@ -647,7 +663,10 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (evil-mc evil-unimpaired f s dash))))
+ '(evil-want-Y-yank-to-eol nil)
+ '(package-selected-packages
+   (quote
+    (systemd flycheck xterm-color ws-butler winum volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smeargle shell-pop restart-emacs rainbow-delimiters popwin persp-mode pcre2el paradox spinner orgit org-bullets open-junk-file neotree multi-term move-text markdown-toc markdown-mode magit-gitflow macrostep lorem-ipsum linum-relative link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-gtags helm-gitignore request helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit ghub treepy graphql with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg eval-sexp-fu highlight eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dtrt-indent disaster diminish define-word counsel-gtags counsel swiper ivy company-c-headers column-enforce-mode cmake-mode clean-aindent-mode clang-format bind-map bind-key auto-yasnippet auto-highlight-symbol auto-compile packed ace-link ace-jump-helm-line helm helm-core ac-ispell auto-complete popup 2048-game yasnippet which-key undo-tree org-plus-contrib mmm-mode hydra ggtags diff-hl company-statistics company async aggressive-indent adaptive-wrap ace-window avy evil-unimpaired f s dash))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
