@@ -1,0 +1,5 @@
+! Move Right Alt to mod3 group
+! Used as modifier key for i3
+keycode 108 = Alt_R
+remove mod1 = Alt_R
+add mod3 = Alt_R
